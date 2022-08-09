@@ -1,0 +1,33 @@
+{
+	"compilerOptions": {
+		"module": "esnext",
+		"target": "esnext",
+        "moduleResolution": "node",
+        "allowJs": true,
+		"strict": true,
+		"isolatedModules": true,
+		"esModuleInterop": true,
+		"resolveJsonModule": true,
+		"forceConsistentCasingInFileNames": true,
+		"noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "declaration": true,
+        "composite": true,
+        "jsx": "react",
+        "baseUrl": ".",
+        "outDir": "../dist",
+        "plugins": [
+            {
+                "transform": "@zerollup/ts-transform-paths"
+            },
+            {
+                "transform": "@zoltu/typescript-transformer-append-js-extension/output/index.js",
+                "after": true
+            }
+        ]
+    },
+	"include": [
+		"**/*.ts"
+    ],
+    "exclude": []
+}
