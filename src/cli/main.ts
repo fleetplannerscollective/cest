@@ -1,16 +1,14 @@
 #!/usr/bin/env node
 
-import yargs from 'yargs'
-import { hideBin } from 'yargs/helpers'
-import run from './run'
+import runner from "runner/runner"
 
-yargs(hideBin(process.argv))
-    .scriptName('cest')
-    .usage('$0 <cmd> [args]')
-    .command(
-        '$0',
-        'Cest. The javascript and typescript test runner for Cassie and associated projects.',
-        run
-    )
-    .help()
-    .argv
+let path = '.'
+if (process.argv.length > 2) {
+    path = process.argv[2]
+}
+
+const pass = await runner(path)
+
+if (!pass) {
+    process.exitCode = 1
+}

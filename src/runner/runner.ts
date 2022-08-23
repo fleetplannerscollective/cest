@@ -1,58 +1,38 @@
 import sourceMapSupport from 'source-map-support'
 import suites from './suites'
-import path from 'path'
-import url from 'url'
-import RunnerOptions from 'types/runner/RunnerOptions'
 import runSuite from './runSuite'
 import Result from 'types/runner/Result'
 import summary from './summary'
 import Suite from 'types/runner/Suite'
 import chalk from 'chalk'
 import prettyError from './prettyError'
+import jsPathToImportPath from 'fs/jsPathToImportPath'
+import readDir from 'fs/readDir'
+import tsOutDir from "fs/tsOutDir"
+import findTsConfig from "fs/findTsConfig"
+import tsPathToJsPath from 'fs/tsPathToJsPath'
 
 sourceMapSupport.install()
 
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
 const importPaths: string[] = []
 
-export default async (testPaths: string[], options: RunnerOptions): Promise<boolean> => {
+export default async (path: string): Promise<boolean> => {
     suites.multiSuite = true
 
-    const root = options.cwd.replace(/\\/g, '/')
-    const rootPieces = root.split('/')
-    const outDirPieces = options.tsOutDir.split('/')
-
-    let tsImportRoot: string
-    let removeTsDirs = 0
-    if (rootPieces.length > outDirPieces.length) {
-        tsImportRoot = path.relative(__dirname, options.tsOutDir + '/' + rootPieces.slice(outDirPieces.length).join('/')).replace(/\\/g, '/')
-    } else {
-        tsImportRoot = path.relative(__dirname, options.tsOutDir).replace(/\\/g, '/')
-        removeTsDirs = outDirPieces.length - rootPieces.length
-    }
-
-    const jsImportRoot = path.relative(__dirname, root).replace(/\\/g, '/')
+    const tsPaths: string[] = await readDir(path)
+    const tsConfigPath  = await findTsConfig(path)
+    const outDir = await tsOutDir(tsConfigPath)
 
     const results: Result[] = []
     let allPassed = true
 
-    for (let testPath of testPaths) {
-        let importPath: string
+    for (let tsPath of tsPaths) {
+        const jsPath = tsPathToJsPath(tsPath, tsConfigPath, outDir)
+        const importPath: string = jsPathToImportPath(jsPath)
 
-        if (testPath.slice(-options.tsExtension.length) === options.tsExtension) {
-            let tsTestPath: string
-            if (removeTsDirs) {
-                tsTestPath = testPath.split('/').slice(removeTsDirs).join('/')
-            } else {
-                tsTestPath = testPath
-            }
-            importPath = `${tsImportRoot}/${tsTestPath.slice(0, -options.tsExtension.length) + options.jsExtension}`
-        } else {
-            importPath = `${jsImportRoot}/${testPath}`
-        }
 
         if (importPaths.includes(importPath)) {
-            process.stdout.write(chalk.gray(`${testPath} -\n`))
+            process.stdout.write(chalk.gray(`${tsPath} -\n`))
             results.push({
                 pass: true,
                 errors: [],
@@ -69,7 +49,7 @@ export default async (testPaths: string[], options: RunnerOptions): Promise<bool
             await import(importPath)
             suite = suites.pop()
         } catch (err) {
-            process.stdout.write(chalk.red(`${testPath} failed import\n`))
+            process.stdout.write(chalk.red(`${tsPath} failed import\n`))
 
             if (!(err instanceof Error)) {
                 err = new Error(String(err))
@@ -77,7 +57,7 @@ export default async (testPaths: string[], options: RunnerOptions): Promise<bool
 
             results.push({
                 pass: false,
-                errors: [prettyError(testPath, '', '', err as Error)],
+                errors: [prettyError(tsPath, '', '', err as Error)],
                 numTests: 1,
                 numPassed: 0
             })
@@ -86,7 +66,7 @@ export default async (testPaths: string[], options: RunnerOptions): Promise<bool
         }
 
         if (!suite) {
-            process.stdout.write(chalk.red(`${testPath} empty suite\n`))
+            process.stdout.write(chalk.red(`${tsPath} empty suite\n`))
             results.push({
                 pass: false,
                 errors: [],
@@ -100,7 +80,7 @@ export default async (testPaths: string[], options: RunnerOptions): Promise<bool
         try {
             await suite.ready
         } catch (err) {
-            process.stdout.write(chalk.red(`${testPath} suite timeout`))
+            process.stdout.write(chalk.red(`${tsPath} suite timeout`))
             results.push({
                 pass: false,
                 errors: [],
@@ -112,7 +92,7 @@ export default async (testPaths: string[], options: RunnerOptions): Promise<bool
         }
 
         if (!suite.tests.length) {
-            process.stdout.write(chalk.red(`${testPath} empty suite\n`))
+            process.stdout.write(chalk.red(`${tsPath} empty suite\n`))
             results.push({
                 pass: false,
                 errors: [],
@@ -123,7 +103,7 @@ export default async (testPaths: string[], options: RunnerOptions): Promise<bool
             continue
         }
         
-        const result = await runSuite(testPath, suite)
+        const result = await runSuite(tsPath, suite)
 
         if (result.errors.length) allPassed = false
 

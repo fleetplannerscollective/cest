@@ -4,28 +4,26 @@
     "type": "module",
     "scripts": {
         "build": "npx ttsc --project src",
+        "test": "cest src/tests",
         "watch": "npx ttsc --project src --watch",
         "clean": "node ./scripts/clean --path cest/dist"
     },
     "bin": {
-        "cest": "dist/cli/main.js"
+        "cest": "./dist/cli/main.js"
     },
     "dependencies": {
         "chalk": "^5.0.1",
-        "fast-glob": "^3.2.11",
-        "source-map-support": "^0.5.21",
-        "yargs": "^17.5.1"
+        "source-map-support": "^0.5.21"
     },
     "devDependencies": {
         "@types/node": "^18.0.0",
         "@types/source-map-support": "^0.5.4",
-        "@types/yargs": "^17.0.10",
         "@zerollup/ts-transform-paths": "^1.7.18",
         "@zoltu/typescript-transformer-append-js-extension": "^1.0.1",
         "ttypescript": "^1.5.13",
         "typescript": "^4.7.4"
     },
-    "description": "Small and fast test runner",
+    "description": "Small and light test runner for typescript",
     "main": "cest.js",
     "repository": {
         "type": "git",

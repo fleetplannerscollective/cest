@@ -1,14 +1,28 @@
-import cest from 'cest'
-import { strict as assert } from 'assert'
+import cest from 'cest' // import cest
+import { strict as assert } from 'assert' // use the default assertion library from node
 
-const test = cest('simpleTest')
+const test = cest('my test suite') // Create a suite
 
-test('passing test', () => {
-    assert(true)
-})
+test(                // define a test
+    'passing test',  // give the test a name
+    () => {          // create a funtion to run the test
+        assert(true) // if the function doesn't throw an error, the test passes
+    }
+)
 
-test('failing test', () => {
-    assert(false)
-})
+test(
+    'should throw', 
+    () => {
+        const t = () => {throw new Error()}
+        assert.throws(t, Error) // For tests which should throw an error, use assert.throws, provided by node.js
+    }
+)
 
-test.run()
+test(
+    'async test', 
+    async () => { // Cest handles async tests fine
+        await new Promise((resolve) => {resolve(true)})
+    }
+)
+
+test.run() // run all the tests
