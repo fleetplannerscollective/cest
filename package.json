@@ -27,7 +27,7 @@
     "main": "cest.js",
     "repository": {
         "type": "git",
-        "url": "https://J84375@bitbucket.apac.ngint.com:9443/scm/cfp/cest.git"
+        "url": "https://github.com/fleetplannerscollective/cest"
     },
     "keywords": [
         "test",
