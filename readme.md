@@ -6,12 +6,12 @@ I got frustrated with how slow Jest was at running tests, so I made this. It's s
 
 ## Installation
 
-`npm install cest`
+`npm install @fleetplannerscollective/cest`
 
 ## Write some tests
 
-```
-import cest from 'cest' // import cest
+```javascript
+import cest from '@fleetplannerscollective/cest' // import cest
 import { strict as assert } from 'assert' // use the default assertion library from node
 
 const test = cest('my test suite') // Create a suite
@@ -63,7 +63,11 @@ You can run a sinlge test suite by directly calling the `.js` file
 
 ## Development
 
-* Download the repo.
-* Install dev dependencies.
+* Clone the repo.
+* Install dev dependencies `npm install`.
 * Run `npm run build`
 * Run `npm run test`
+
+To remove the dist folder for a completely fresh build `npm run clean`.
+
+To incrementally rebuild whilst working `npm run watch`.

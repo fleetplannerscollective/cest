@@ -4,7 +4,7 @@ import runner from "runner/runner"
 
 let path = '.'
 if (process.argv.length > 2) {
-    path = process.argv[2]
+    path = process.argv[2].replace(/\\/g, '/')
 }
 
 const pass = await runner(path)
