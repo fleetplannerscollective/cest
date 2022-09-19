@@ -3,7 +3,7 @@ import { dirname } from 'path'
 
 const stat = fs.promises.stat
 
-export default async (path: string): Promise<string> => {
+export default async (path: string): Promise<string | undefined> => {
 
     let found = false
     let p = path
@@ -24,7 +24,7 @@ export default async (path: string): Promise<string> => {
     }
 
     if (!found) {
-        throw new Error(`tsconfig.json not found`)
+        return undefined
     }
 
     return p

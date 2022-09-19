@@ -21,7 +21,10 @@ export default async (path: string): Promise<boolean> => {
 
     const tsPaths: string[] = await readDir(path)
     const tsConfigPath  = await findTsConfig(path)
-    const outDir = await tsOutDir(tsConfigPath)
+    let outDir: string | undefined
+    if (tsConfigPath) {
+        outDir = await tsOutDir(tsConfigPath)
+    }
 
     const results: Result[] = []
     let allPassed = true
@@ -30,6 +33,9 @@ export default async (path: string): Promise<boolean> => {
         let jsPath: string
 
         if (tsPath.slice(-'.test.ts'.length) === '.test.ts') {
+            if (!tsConfigPath || !outDir) {
+                throw new Error(`tsconfig.json not found`)
+            }
             jsPath = tsPathToJsPath(tsPath, tsConfigPath, outDir)
         } else if (tsPath.slice(-'.test.js'.length) === '.test.ts') {
             jsPath = tsPath
