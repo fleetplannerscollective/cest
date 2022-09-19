@@ -27,6 +27,11 @@ export default async (path: string): Promise<boolean> => {
     let allPassed = true
 
     for (let tsPath of tsPaths) {
+        const pieces = tsPath.split('.')
+        if (pieces.length < 2 || pieces[pieces.length - 2] !== 'test') {
+            continue
+        }
+
         const jsPath = tsPathToJsPath(tsPath, tsConfigPath, outDir)
         const importPath: string = jsPathToImportPath(jsPath)
 
