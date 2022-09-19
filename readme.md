@@ -61,6 +61,19 @@ Cest will identify all `.ts` files in the path, find `.tsconfig` locate the comp
 You can run a sinlge test suite by directly calling the `.js` file
 `node mytest.js`
 
+## Run tests programatically
+
+```
+import cest from '@fleetplannerscollective/cest'
+
+const result = cest.runner('path to tests')
+if (result) {
+    // tests passed
+} else {
+    // tests failed
+}
+```
+
 ## Development
 
 * Clone the repo.

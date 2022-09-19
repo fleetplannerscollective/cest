@@ -5,10 +5,11 @@ import Suite from 'types/runner/Suite'
 import SuiteBuilder from 'types/SuiteBuilder'
 import runSuite from 'runner/runSuite'
 import summary from 'runner/summary'
+import runner from 'runner/runner'
 
 sourceMapSupport.install()
 
-export default (suiteName: string) => {
+const exp = (suiteName: string) => {
     let resolveReady: () => void | undefined
     let rejectReady: () => void | undefined
     const suite: Suite = {
@@ -44,4 +45,8 @@ export default (suiteName: string) => {
 
     return ret
 }
+
+exp.runner = runner
+
+export default exp
 
