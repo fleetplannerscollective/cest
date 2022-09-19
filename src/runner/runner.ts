@@ -11,6 +11,7 @@ import readDir from 'fs/readDir'
 import tsOutDir from "fs/tsOutDir"
 import findTsConfig from "fs/findTsConfig"
 import tsPathToJsPath from 'fs/tsPathToJsPath'
+import File from 'types/fs/File'
 
 sourceMapSupport.install()
 
@@ -19,7 +20,7 @@ const importPaths: string[] = []
 export default async (path: string): Promise<boolean> => {
     suites.multiSuite = true
 
-    const tsPaths: string[] = await readDir(path)
+    const tsPaths: File[] = await readDir(path)
     const tsConfigPath  = await findTsConfig(path)
     let outDir: string | undefined
     if (tsConfigPath) {
@@ -32,13 +33,13 @@ export default async (path: string): Promise<boolean> => {
     for (let tsPath of tsPaths) {
         let jsPath: string
 
-        if (tsPath.slice(-'.test.ts'.length) === '.test.ts') {
+        if (tsPath.type === 'ts') {
             if (!tsConfigPath || !outDir) {
                 throw new Error(`tsconfig.json not found`)
             }
-            jsPath = tsPathToJsPath(tsPath, tsConfigPath, outDir)
-        } else if (tsPath.slice(-'.test.js'.length) === '.test.ts') {
-            jsPath = tsPath
+            jsPath = tsPathToJsPath(tsPath.name, tsConfigPath, outDir)
+        } else if (tsPath.type === 'js') {
+            jsPath = tsPath.name
         } else {
             continue
         }
@@ -71,7 +72,7 @@ export default async (path: string): Promise<boolean> => {
 
             results.push({
                 pass: false,
-                errors: [prettyError(tsPath, '', '', err as Error)],
+                errors: [prettyError(tsPath.name, '', '', err as Error)],
                 numTests: 1,
                 numPassed: 0
             })
@@ -117,7 +118,7 @@ export default async (path: string): Promise<boolean> => {
             continue
         }
         
-        const result = await runSuite(tsPath, suite)
+        const result = await runSuite(tsPath.name, suite)
 
         if (result.errors.length) allPassed = false
 
