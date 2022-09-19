@@ -27,14 +27,17 @@ export default async (path: string): Promise<boolean> => {
     let allPassed = true
 
     for (let tsPath of tsPaths) {
-        const pieces = tsPath.split('.')
-        if (pieces.length < 2 || pieces[pieces.length - 2] !== 'test') {
+        let jsPath: string
+
+        if (tsPath.slice(-'.test.ts'.length) === '.test.ts') {
+            jsPath = tsPathToJsPath(tsPath, tsConfigPath, outDir)
+        } else if (tsPath.slice(-'.test.js'.length) === '.test.ts') {
+            jsPath = tsPath
+        } else {
             continue
         }
 
-        const jsPath = tsPathToJsPath(tsPath, tsConfigPath, outDir)
         const importPath: string = jsPathToImportPath(jsPath)
-
 
         if (importPaths.includes(importPath)) {
             process.stdout.write(chalk.gray(`${tsPath} -\n`))

@@ -54,7 +54,8 @@ Use the cli tool:
 
 `cest [path/to/ts/dir]`
 
-Cest will identify all `.ts` files in the path, find `.tsconfig` locate the compiled `.js` files and run them.
+Cest will identify all `.test.ts` files in the path, find `.tsconfig` locate the compiled `.js` files and run them.
+Cest will also identify all `.test.js` files in the path and run them.
 
 ## Run a single test suite without CLI
 
